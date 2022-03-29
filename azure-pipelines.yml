@@ -16,6 +16,7 @@ steps:
     arguments: '-c Release'
   displayName: 'Build'
 
+- bash: dotnet pack ./src/Behavioral.Automation/Behavioral.Automation.csproj -c Release /p:Platform="AnyCPU" /p:PackageVersion=$(git describe --always --tags)
 - task: DotNetCoreCLI@2
   inputs:
     command: 'pack'
