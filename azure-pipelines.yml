@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
@@ -10,10 +5,50 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: UseDotNet@2
+  inputs:
+    version: '6.x'
+    packageType: sdk
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    arguments: '-c Release'
+  displayName: 'Build'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'pack'
+    arguments: '-c Release'
+    projects: src/Behavioral.Automation/Behavioral.Automation.csproj
+  displayName: 'Pack'
+
+#  dotnet pack ./src/Behavioral.Automation/Behavioral.Automation.csproj \
+#   --configuration Release /p:Platform=\"AnyCPU\" \
+#    /p:PackageVersion=$(git describe --always --tags)
+
+#                    withCredentials([string(credentialsId: 'github_token_for_nuget', variable: 'GH_TOKEN')]) {
+#                        def commit_sum = sh(script: 'git rev-list  git rev-list --tags --no-walk --max-count=1..HEAD --count', returnStdout: true).trim()
+#                        def package_version = sh(script: 'git describe --always --tags',returnStdout: true).trim()
+#                        if(params.Branch == 'master' && commit_sum.toString() == '0'){
+#                            sh '''
+#                            echo "Push to nuget.org repository"
+#                            '''
+#                            currentBuild.description = "<b>Version: <font color='blue'>${package_version}</font><br>" +
+#                                                       "Pushed: <font color='blue'>Nuget.org</font></b>"
+#                        }else{
+#                            sh '''
+#                             echo "Push to internal repository"
+#                             
+#                             dotnet nuget add source https://nuget.pkg.github.com/quantori/index.json \
+#                               --name github \
+#                               --username quantori \
+#                               --password $GH_TOKEN \
+#                               --store-password-in-clear-text
+#                             
+#                             dotnet nuget push ./src/Behavioral.Automation/bin/Release/Behavioral.Automation.*.nupkg \
+#                               --source "github" \
+#                               --skip-duplicate
+#                            '''
+#                            currentBuild.description = "<b>Version: <font color='blue'>${package_version}</font><br>" +
+#                                                       "Pushed: <font color='blue'>Enternal repository</font></b>" 
