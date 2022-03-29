@@ -29,7 +29,7 @@ steps:
       dotnet pack ./src/Behavioral.Automation/Behavioral.Automation.csproj -c Release /p:Platform="AnyCPU" \
         /p:PackageVersion=$(git describe --always --tags)
       dotnet nuget add source https://nuget.pkg.github.com/victorvoronin/index.json \
-        --name github --username victorvoronin --password $(tiken) --store-password-in-clear-text
+        --name github --username victorvoronin --password $(token) --store-password-in-clear-text
       dotnet nuget push ./src/Behavioral.Automation/bin/Release/Behavioral.Automation.*.nupkg \
         --source "github" --skip-duplicate
 #                             
