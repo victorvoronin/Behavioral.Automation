@@ -30,6 +30,7 @@ steps:
         /p:PackageVersion=$(git describe --always --tags)
       dotnet nuget add source https://nuget.pkg.github.com/victorvoronin/index.json \
         --name github --username victorvoronin --password $(token) --store-password-in-clear-text
+      cat nuget.config
       dotnet nuget push ./src/Behavioral.Automation/bin/Release/Behavioral.Automation.*.nupkg \
         --source "github" --skip-duplicate --api-key $(token)
 #                             
