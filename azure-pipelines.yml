@@ -9,6 +9,7 @@ steps:
   inputs:
     version: '6.x'
     packageType: sdk
+    performMultiLevelLookup: true
 
 - task: DotNetCoreCLI@2
   inputs:
