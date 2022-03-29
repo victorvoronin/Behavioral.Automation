@@ -4,6 +4,9 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+- group: github
+
 steps:
 - task: UseDotNet@2
   inputs:
@@ -16,11 +19,19 @@ steps:
     arguments: '-c Release'
   displayName: 'Build'
 
-- bash: |
-    dotnet pack ./src/Behavioral.Automation/Behavioral.Automation.csproj -c Release /p:Platform="AnyCPU" \
-      /p:PackageVersion=$(git describe --always --tags)
-    dotnet nuget add source https://nuget.pkg.github.com/victorvoronin/index.json \
-      --name github --username victorvoronin --password password --store-password-in-clear-text
+- task: Bash@3
+  displayName: Pack and publish
+  env:
+    token: $(token)
+  inputs:
+    targetType: inline
+    script: |  
+      dotnet pack ./src/Behavioral.Automation/Behavioral.Automation.csproj -c Release /p:Platform="AnyCPU" \
+        /p:PackageVersion=$(git describe --always --tags)
+      dotnet nuget add source https://nuget.pkg.github.com/victorvoronin/index.json \
+        --name github --username victorvoronin --password $(tiken) --store-password-in-clear-text
+      dotnet nuget push ./src/Behavioral.Automation/bin/Release/Behavioral.Automation.*.nupkg \
+        --source "github" --skip-duplicate
 #                             
 #                             dotnet nuget push ./src/Behavioral.Automation/bin/Release/Behavioral.Automation.*.nupkg \
 #                               --source "github" \
